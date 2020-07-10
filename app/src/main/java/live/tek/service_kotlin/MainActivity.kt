@@ -2,16 +2,10 @@ package live.tek.service_kotlin
 
 import android.Manifest
 import android.bluetooth.BluetoothAdapter
-import android.content.BroadcastReceiver
-import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
-import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_FINISHED
-import android.bluetooth.BluetoothAdapter.ACTION_DISCOVERY_STARTED
-import android.bluetooth.BluetoothDevice.ACTION_FOUND
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -38,6 +32,7 @@ class MainActivity : AppCompatActivity() {
         buttonStart.setOnClickListener {
             val intent = Intent(this, ForegroundService::class.java)
             intent.action = "start"
+            intent.putExtra("StartKeyword", "0 people around you")
             startService(intent)
             //  ForegroundService.startService(this, "Foreground Service is running...")
         }
