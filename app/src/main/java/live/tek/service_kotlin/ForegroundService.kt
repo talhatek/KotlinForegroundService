@@ -1,9 +1,6 @@
 package live.tek.service_kotlin
 
-import android.app.Notification
-import android.app.NotificationManager
-import android.app.PendingIntent
-import android.app.Service
+import android.app.*
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.content.BroadcastReceiver
@@ -28,7 +25,6 @@ class ForegroundService : Service() {
                 scan()
             }
             ACTIONPAUSE -> {
-
                 unregisterReceiver(receiver)
                 stopForeground(true)
                 stopSelf()
@@ -53,12 +49,12 @@ class ForegroundService : Service() {
             PendingIntent.FLAG_CANCEL_CURRENT
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-
             val action = Notification.Action(R.drawable.ic_close_24, "Close", killButton)
             notification = Notification.Builder(this@ForegroundService, CHANNEL_ID)
                 .setContentTitle("Foreground Service Kotlin Example")
                 .setContentText("$str people around you")
                 .setSmallIcon(R.drawable.ic_notification_24)
+                .setNumber(3)
                 .addAction(action)
                 .build()
             val mNotificationManager =
@@ -107,7 +103,7 @@ class ForegroundService : Service() {
         val pauseIntent = Intent(this, ForegroundService::class.java)
         pauseIntent.action = ACTIONPAUSE
         val pendingPrevIntent = PendingIntent.getService(this, 0, pauseIntent, 0)
-        //   createNotificationChannel()
+        createNotificationChannel()
         val notificationIntent = Intent(this, MainActivity::class.java)
         val pendingIntent = PendingIntent.getActivity(
             this,
@@ -119,6 +115,8 @@ class ForegroundService : Service() {
                 val notification = Notification.Builder(this, CHANNEL_ID)
                     .setContentTitle("Foreground Service Kotlin Example")
                     .setContentText(str)
+
+
                     .setSmallIcon(R.drawable.ic_notification_24)
                     .setContentIntent(pendingIntent)
                     .addAction(action)
@@ -131,6 +129,7 @@ class ForegroundService : Service() {
                     .setContentTitle("Foreground Service Kotlin Example")
                     .setContentText(str)
                     .setStyle(style)
+
                     .setSmallIcon(R.drawable.ic_notification_24)
                     .setContentIntent(pendingIntent)
                     .addAction(R.drawable.ic_close_24, "Close", pendingPrevIntent)
@@ -141,6 +140,7 @@ class ForegroundService : Service() {
                 val notification = Notification.Builder(this@ForegroundService)
                     .setContentTitle("Foreground Service Kotlin Example")
                     .setContentText(str)
+
                     .setSmallIcon(R.drawable.ic_notification_24)
                     .setContentIntent(pendingPrevIntent)
                     .notification
@@ -150,7 +150,16 @@ class ForegroundService : Service() {
 
     }
 
-
+    private fun createNotificationChannel() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val serviceChannel = NotificationChannel(
+                CHANNEL_ID, "Foreground Service Channel",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            val manager = getSystemService(NotificationManager::class.java)
+            manager!!.createNotificationChannel(serviceChannel)
+        }
+    }
 }
 /*companion object {
     fun startService(context: Context, message: String) {
@@ -164,16 +173,7 @@ class ForegroundService : Service() {
         context.stopService(stopIntent)
     }
 }*/
-/* private fun createNotificationChannel() {
-     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-         val serviceChannel = NotificationChannel(
-             CHANNEL_ID, "Foreground Service Channel",
-             NotificationManager.IMPORTANCE_DEFAULT
-         )
-         val manager = getSystemService(NotificationManager::class.java)
-         manager!!.createNotificationChannel(serviceChannel)
-     }
- }*/
+
 /*  val notification = NotificationCompat.Builder(this, CHANNEL_ID)
       .setContentTitle("Foreground Service Kotlin Example")
       .setContentText(str + " people around you")
